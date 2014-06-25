@@ -34,5 +34,8 @@
  * </dd>
  * </dl>
  */
-@cpw.mods.fml.common.API(owner = "OpenComputers|Core", provides = "OpenComputersAPI", apiVersion = "1.4.10")
+@cpw.mods.fml.common.API(
+        owner = "OpenComputers|Core",
+        provides = "OpenComputersAPI",
+        apiVersion = "2.0.1")
 package li.cil.oc.api;

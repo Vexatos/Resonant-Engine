@@ -57,6 +57,7 @@ public class ContentRegistry
         return this;
     }
 
+    @Deprecated
     public int getNextPacketID()
     {
         return ++packetID;

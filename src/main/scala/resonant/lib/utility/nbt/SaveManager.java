@@ -37,7 +37,7 @@ public class SaveManager
     private static SaveManager instance;
 
     /** Last cpu time that the save manager tried to save a file */
-    private long lastSaveMills = 0;
+    private static long lastSaveMills = 0;
 
     /** Gets an instance of this class */
     public static SaveManager instance()
@@ -133,7 +133,7 @@ public class SaveManager
             if (nbt != null)
             {
                 try
-                {                    
+                {
                     if (nbt.hasKey("id"))
                     {
                         clazz = getClass(nbt.getString("id"));
@@ -194,26 +194,31 @@ public class SaveManager
     @ForgeSubscribe
     public void worldSave(WorldEvent evt)
     {
-        //current time milli-seconds is used to prevent the files from saving 20 times when the world loads
-        if (System.currentTimeMillis() - lastSaveMills > 2000)
-        {
-            lastSaveMills = System.currentTimeMillis();
-            saveAll();
-        }
+        saveAll();
     }
 
     /** Called to save all object currently set to save next call */
     public static void saveAll()
     {
-        for (IVirtualObject ref : instance().saveList)
+        saveAll(false);
+    }
+
+    /** Called to save all object currently set to save next call */
+    public static void saveAll(boolean force)
+    {
+        if (System.currentTimeMillis() - lastSaveMills > 2000)
         {
-            saveObject(ref);
+            lastSaveMills = System.currentTimeMillis();
+            for (IVirtualObject ref : instance().saveList)
+            {
+                saveObject(ref);
+            }
+            for (IVirtualObject ref : instance().nextSaveList)
+            {
+                saveObject(ref);
+            }
+            instance().nextSaveList.clear();
         }
-        for (IVirtualObject ref : instance().nextSaveList)
-        {
-            saveObject(ref);
-        }
-        instance().nextSaveList.clear();
     }
 
     /** Saves an object to its preferred save location. Does check for null, registered save class,

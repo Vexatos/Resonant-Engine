@@ -21,7 +21,7 @@ import universalelectricity.api.vector.VectorWorld;
 /** File that represents all the data loaded from a schematic data file
  * 
  * @author DarkGuardsman */
-public class SchematicMap extends Schematic implements ISaveObj
+public class BlockMap extends Schematic implements ISaveObj
 {
     //TODO save the schematics using block names, include a reference sheet to match block names to IDs instead of saving each block as a string
 
@@ -153,9 +153,9 @@ public class SchematicMap extends Schematic implements ISaveObj
         {
             String output = "";
             Block block = Block.blocksList[entry.getValue().left()];
-            if (block != null && SchematicMap.BLOCK_SAVE_MAP_REV.containsKey(block))
+            if (block != null && BlockMap.BLOCK_SAVE_MAP_REV.containsKey(block))
             {
-                output += SchematicMap.BLOCK_SAVE_MAP_REV.get(block);
+                output += BlockMap.BLOCK_SAVE_MAP_REV.get(block);
             }
             else
             {
@@ -191,9 +191,9 @@ public class SchematicMap extends Schematic implements ISaveObj
                 {
                     if (blockData.length > 0)
                     {
-                        if (SchematicMap.BLOCK_SAVE_MAP.containsKey(blockData[0]))
+                        if (BlockMap.BLOCK_SAVE_MAP.containsKey(blockData[0]))
                         {
-                            blockID = SchematicMap.BLOCK_SAVE_MAP.get(blockData[0]).blockID;
+                            blockID = BlockMap.BLOCK_SAVE_MAP.get(blockData[0]).blockID;
                         }
                         else
                         {
@@ -237,7 +237,7 @@ public class SchematicMap extends Schematic implements ISaveObj
     {
         try
         {
-            this.load(CompressedStreamTools.readCompressed(SchematicMap.class.getResource("/assets/artillects/schematics/" + fileName + ".dat").openStream()));
+            this.load(CompressedStreamTools.readCompressed(BlockMap.class.getResource("/assets/artillects/schematics/" + fileName + ".dat").openStream()));
             this.name = fileName;
             this.init();
         }
@@ -261,12 +261,12 @@ public class SchematicMap extends Schematic implements ISaveObj
         }
     }
 
-    public SchematicMap loadWorldSelection(World world, Vector3 pos, Vector3 pos2)
+    public BlockMap loadWorldSelection(World world, Vector3 pos, Vector3 pos2)
     {
         int deltaX, deltaY, deltaZ;
         Vector3 start = new Vector3(pos.x > pos2.x ? pos2.x : pos.x, pos.y > pos2.y ? pos2.y : pos.y, pos.z > pos2.z ? pos2.z : pos.z);
 
-        SchematicMap sch = new SchematicMap();
+        BlockMap sch = new BlockMap();
         if (pos.x < pos2.x)
         {
             deltaX = (int) (pos2.x - pos.x + 1);

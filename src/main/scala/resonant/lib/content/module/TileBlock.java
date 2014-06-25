@@ -535,7 +535,8 @@ public abstract class TileBlock extends TileEntity
 
     public void setDirection(ForgeDirection direction)
     {
-        world().setBlockMetadataWithNotify(x(), y(), z(), direction.ordinal(), 3);
+        if (world() != null)
+            world().setBlockMetadataWithNotify(x(), y(), z(), direction.ordinal(), 3);
     }
 
     /** Block events */
@@ -571,27 +572,32 @@ public abstract class TileBlock extends TileEntity
 
     protected void notifyChange()
     {
-        world().notifyBlocksOfNeighborChange(x(), y(), z(), blockID());
+        if (world() != null)
+            world().notifyBlocksOfNeighborChange(x(), y(), z(), blockID());
     }
 
     protected void markRender()
     {
-        world().markBlockForRenderUpdate(x(), y(), z());
+        if (world() != null)
+            world().markBlockForRenderUpdate(x(), y(), z());
     }
 
     protected void markUpdate()
     {
-        world().markBlockForUpdate(x(), y(), z());
+        if (world() != null)
+            world().markBlockForUpdate(x(), y(), z());
     }
 
     protected void updateLight()
     {
-        world().updateAllLightTypes(x(), y(), z());
+        if (world() != null)
+            world().updateAllLightTypes(x(), y(), z());
     }
 
     protected void scheduelTick(int delay)
     {
-        world().scheduleBlockUpdate(x(), y(), z(), blockID(), delay);
+        if (world() != null)
+            world().scheduleBlockUpdate(x(), y(), z(), blockID(), delay);
     }
 
     /** Called when an entity collides with this block. */
@@ -692,12 +698,16 @@ public abstract class TileBlock extends TileEntity
 
     public boolean isIndirectlyPowered()
     {
-        return world().isBlockIndirectlyGettingPowered(x(), y(), z());
+        if (world() != null)
+            return world().isBlockIndirectlyGettingPowered(x(), y(), z());
+        return false;
     }
 
     public int getStrongestIndirectPower()
     {
-        return world().getStrongestIndirectPower(x(), y(), z());
+        if (world() != null)
+            return world().getStrongestIndirectPower(x(), y(), z());
+        return 0;
     }
 
     public int getWeakRedstonePower(IBlockAccess access, int side)

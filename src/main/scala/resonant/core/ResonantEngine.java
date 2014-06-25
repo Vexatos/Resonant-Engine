@@ -452,8 +452,6 @@ public class ResonantEngine
         // Potion Array resized to Current potion array, +32, Allows to miss conflicting ID's
         PotionUtility.resizePotionArray();
 
-        SaveManager.registerClass("ModFlag", ModFlag.class);
-
         //EventHandlers
         MinecraftForge.EVENT_BUS.register(INSTANCE);
         MinecraftForge.EVENT_BUS.register(SaveManager.instance());
@@ -575,6 +573,7 @@ public class ResonantEngine
     @EventHandler
     public void serverStarting(FMLServerStartingEvent event)
     {
+        SaveManager.registerClass("ModFlag", ModFlag.class);
         // Load ModFlag from world save
         Object object = SaveManager.createAndLoad(NBTUtility.loadData(FlagRegistry.DEFAULT_NAME));
         if (!(object instanceof ModFlag))
@@ -595,7 +594,7 @@ public class ResonantEngine
     @EventHandler
     public void onServerStopping(FMLServerStoppingEvent evt)
     {
-        SaveManager.saveAll();
+        SaveManager.saveAll(true);
     }
 
     /** Default handler. */

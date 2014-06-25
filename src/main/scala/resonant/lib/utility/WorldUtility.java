@@ -58,9 +58,9 @@ public class WorldUtility
             case SOUTH:
                 return -90;
             case WEST:
-                return -180;
-            case EAST:
                 return 0;
+            case EAST:
+                return -180;
         }
 
         return 0;

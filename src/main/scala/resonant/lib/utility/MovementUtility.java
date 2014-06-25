@@ -1,13 +1,13 @@
 package resonant.lib.utility;
 
-import java.lang.reflect.Method;
-
+import cpw.mods.fml.relauncher.ReflectionHelper;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import universalelectricity.api.vector.Vector3;
-import cpw.mods.fml.relauncher.ReflectionHelper;
+
+import java.lang.reflect.Method;
 
 /** Helper class for the Force Manipulator
  * 
@@ -28,63 +28,66 @@ public class MovementUtility
      * @param tileEntity */
     public static void setBlockSneaky(World world, Vector3 position, int id, int metadata, TileEntity tileEntity)
     {
-        Chunk chunk = world.getChunkFromChunkCoords(position.intX() >> 4, position.intZ() >> 4);
-        Vector3 chunkPosition = new Vector3(position.intX() & 0xF, position.intY() & 0xF, position.intZ() & 0xF);
-
-        int heightMapIndex = chunkPosition.intZ() << 4 | chunkPosition.intX();
-
-        if (position.intY() >= chunk.precipitationHeightMap[heightMapIndex] - 1)
+        if(world != null && position != null && position.y() >= 1 && position.y() <= 255)
         {
-            chunk.precipitationHeightMap[heightMapIndex] = -999;
-        }
-
-        int heightMapValue = chunk.heightMap[heightMapIndex];
-
-        world.removeBlockTileEntity(position.intX(), position.intY(), position.intZ());
-
-        ExtendedBlockStorage extendedBlockStorage = chunk.getBlockStorageArray()[position.intY() >> 4];
-
-        if (extendedBlockStorage == null)
-        {
-            extendedBlockStorage = new ExtendedBlockStorage((position.intY() >> 4) << 4, !world.provider.hasNoSky);
-
-            chunk.getBlockStorageArray()[position.intY() >> 4] = extendedBlockStorage;
-        }
-
-        extendedBlockStorage.setExtBlockID(chunkPosition.intX(), chunkPosition.intY(), chunkPosition.intZ(), id);
-        extendedBlockStorage.setExtBlockMetadata(chunkPosition.intX(), chunkPosition.intY(), chunkPosition.intZ(), metadata);
-
-        if (position.intY() >= heightMapValue)
-        {
-            chunk.generateSkylightMap();
-        }
-        else
-        {
-            if (chunk.getBlockLightOpacity(chunkPosition.intX(), position.intY(), chunkPosition.intZ()) > 0)
+            Chunk chunk = world.getChunkFromChunkCoords(position.intX() >> 4, position.intZ() >> 4);
+            Vector3 chunkPosition = new Vector3(position.intX() & 0xF, position.intY() & 0xF, position.intZ() & 0xF);
+    
+            int heightMapIndex = chunkPosition.intZ() << 4 | chunkPosition.intX();
+    
+            if (position.intY() >= chunk.precipitationHeightMap[heightMapIndex] - 1)
             {
-                if (position.intY() >= heightMapValue)
+                chunk.precipitationHeightMap[heightMapIndex] = -999;
+            }
+    
+            int heightMapValue = chunk.heightMap[heightMapIndex];
+            
+			world.removeBlockTileEntity(position.intX(), position.intY(), position.intZ());
+    
+            ExtendedBlockStorage extendedBlockStorage = chunk.getBlockStorageArray()[position.intY() >> 4];
+    
+            if (extendedBlockStorage == null)
+            {
+                extendedBlockStorage = new ExtendedBlockStorage((position.intY() >> 4) << 4, !world.provider.hasNoSky);
+    
+                chunk.getBlockStorageArray()[position.intY() >> 4] = extendedBlockStorage;
+            }
+    
+            extendedBlockStorage.setExtBlockID(chunkPosition.intX(), chunkPosition.intY(), chunkPosition.intZ(), id);
+            extendedBlockStorage.setExtBlockMetadata(chunkPosition.intX(), chunkPosition.intY(), chunkPosition.intZ(), metadata);
+    
+            if (position.intY() >= heightMapValue)
+            {
+                chunk.generateSkylightMap();
+            }
+            else
+            {
+                if (chunk.getBlockLightOpacity(chunkPosition.intX(), position.intY(), chunkPosition.intZ()) > 0)
                 {
-                    relightBlock(chunk, chunkPosition.clone().translate(new Vector3(0, 1, 0)));
+                    if (position.intY() >= heightMapValue)
+                    {
+                        relightBlock(chunk, chunkPosition.clone().translate(new Vector3(0, 1, 0)));
+                    }
                 }
+                else if (position.intY() == heightMapValue - 1)
+                {
+                    relightBlock(chunk, chunkPosition);
+                }
+    
+                propagateSkylightOcclusion(chunk, chunkPosition);
             }
-            else if (position.intY() == heightMapValue - 1)
+    
+            chunk.isModified = true;
+    
+            world.updateAllLightTypes(position.intX(), position.intY(), position.intZ());
+    
+            if (tileEntity != null)
             {
-                relightBlock(chunk, chunkPosition);
+                world.setBlockTileEntity(position.intX(), position.intY(), position.intZ(), tileEntity);
             }
-
-            propagateSkylightOcclusion(chunk, chunkPosition);
+    
+            world.markBlockForUpdate(position.intX(), position.intY(), position.intZ());
         }
-
-        chunk.isModified = true;
-
-        world.updateAllLightTypes(position.intX(), position.intY(), position.intZ());
-
-        if (tileEntity != null)
-        {
-            world.setBlockTileEntity(position.intX(), position.intY(), position.intZ(), tileEntity);
-        }
-
-        world.markBlockForUpdate(position.intX(), position.intY(), position.intZ());
     }
 
     /** Re-lights the block in a specific position.

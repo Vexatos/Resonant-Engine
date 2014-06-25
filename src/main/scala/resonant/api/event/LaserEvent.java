@@ -37,79 +37,7 @@ public class LaserEvent extends Event
         this.world = world;
         this.spot = spot;
         this.target = target;
-    }
-
-    /** Called when a laser is fired */
-    @Cancelable
-    public static class LaserFireEvent extends LaserEvent
-    {
-        public Object shooter;
-
-        public LaserFireEvent(World world, Vector3 spot, Vector3 target, Object shooter)
-        {
-            super(world, spot, target);
-            this.shooter = shooter;
-        }
-
-        public LaserFireEvent(TileEntity tileEntity, MovingObjectPosition hit)
-        {
-            super(tileEntity.worldObj, new Vector3(tileEntity), new Vector3(hit));
-            this.shooter = tileEntity;
-        }
-    }
-
-    /** Called when a player fires a laser. Use this to cancel a laser hit event */
-    @Cancelable
-    public static class LaserFiredPlayerEvent extends LaserFireEvent
-    {
-        public ItemStack laserItem;
-        public MovingObjectPosition hit;
-
-        public LaserFiredPlayerEvent(EntityPlayer player, MovingObjectPosition hit, ItemStack stack)
-        {
-            super(player.worldObj, new Vector3(player), new Vector3(hit), player);
-            this.laserItem = stack;
-            this.hit = hit;
-        }
-    }
-
-    /** Called when a laser is heating up a block to be mined */
-    public static class LaserMeltBlockEvent extends LaserEvent
-    {
-        public Object shooter;
-
-        public LaserMeltBlockEvent(World world, Vector3 spot, Vector3 hit, Object shooter)
-        {
-            super(world, spot, hit);
-            this.shooter = shooter;
-        }
-    }
-
-    /** Use this to change what drops when the laser finishes mining a block */
-    public static class LaserDropItemEvent extends LaserEvent
-    {
-        public List<ItemStack> items;
-
-        public LaserDropItemEvent(World world, Vector3 spot, Vector3 hit, List<ItemStack> items)
-        {
-            super(world, spot, hit);
-            this.items = items;
-        }
-    }
-
-    /** Called before a laser mines a block */
-    @Cancelable
-    public static class LaserMineBlockEvent extends LaserEvent
-    {
-        public Object shooter;
-
-        public LaserMineBlockEvent(World world, Vector3 spot, Vector3 hit, Object shooter)
-        {
-            super(world, spot, hit);
-            this.shooter = shooter;
-        }
-
-    }
+    }    
 
     @SuppressWarnings("unused")
     public static boolean doLaserHarvestCheck(World world, Vector3 pos, Object player, Vector3 hit)
@@ -198,7 +126,7 @@ public class LaserEvent extends Event
                     }
                 }
             }
-            MinecraftForge.EVENT_BUS.post(new LaserEvent.LaserMeltBlockEvent(world, start, vec, player));
+            MinecraftForge.EVENT_BUS.post(new LaserMeltBlockEvent(world, start, vec, player));
         }
     }
 
@@ -296,7 +224,7 @@ public class LaserEvent extends Event
                         }
                     }
                     items.removeAll(removeList);
-                    LaserEvent.LaserDropItemEvent event = new LaserEvent.LaserDropItemEvent(world, start, vec, items);
+                    LaserDropItemEvent event = new LaserDropItemEvent(world, start, vec, items);
                     MinecraftForge.EVENT_BUS.post(event);
                     items = event.items;
                 }

@@ -37,7 +37,7 @@ public class TileInfiniteFluid extends TileIO implements IFluidHandler, IBlockAc
     public void updateEntity()
     {
         super.updateEntity();
-        if (active)
+        if (active && this.tank.getFluid() != null && this.tank.getFluid().getFluid() != null)
         {
             for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS)
             {
@@ -111,18 +111,23 @@ public class TileInfiniteFluid extends TileIO implements IFluidHandler, IBlockAc
         {
             if (entityPlayer.getHeldItem().getItem() == Item.stick)
             {
-                this.active = !this.active;
-                entityPlayer.sendChatToPlayer(ChatMessageComponent.createFromText("[FluidVoid]Pumping:" + this.active));
+                if (!world().isRemote)
+                {
+                    this.active = !this.active;
+                    entityPlayer.sendChatToPlayer(ChatMessageComponent.createFromText("[FluidVoid]Pumping:" + this.active));
+                }
                 return true;
             }
             FluidStack stack = FluidContainerRegistry.getFluidForFilledItem(entityPlayer.getHeldItem());
             if (stack != null)
             {
-                stack = stack.copy();
-                stack.amount = Integer.MAX_VALUE;
-                this.tank.setFluid(stack);
-                entityPlayer.sendChatToPlayer(ChatMessageComponent.createFromText("[FluidVoid]Fluid:" + stack.getFluid().getName()));
-
+                if (!world().isRemote)
+                {
+                    stack = stack.copy();
+                    stack.amount = Integer.MAX_VALUE;
+                    this.tank.setFluid(stack);
+                    entityPlayer.sendChatToPlayer(ChatMessageComponent.createFromText("[FluidVoid]Fluid:" + stack.getFluid().getName()));
+                }
                 return true;
             }
         }

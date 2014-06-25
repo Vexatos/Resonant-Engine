@@ -105,7 +105,7 @@ public class RenderItemOverlayUtility
 
         for (ForgeDirection direction : sides)
         {
-            if (direction != ForgeDirection.UNKNOWN)
+            if (direction != ForgeDirection.UNKNOWN && direction != ForgeDirection.UP && direction != ForgeDirection.DOWN)
             {
                 if (tile.worldObj.isBlockSolidOnSide(tile.xCoord + direction.offsetX, tile.yCoord, tile.zCoord + direction.offsetZ, direction.getOpposite()))
                 {
@@ -160,6 +160,14 @@ public class RenderItemOverlayUtility
 
             switch (direction)
             {
+                case UP:
+                    GL11.glRotatef(90, 0, 0, 1);
+                    GL11.glTranslated(x + 0.9, y + 0.65, z - 0.01);
+                    break;
+                case DOWN:
+                    GL11.glRotatef(-90, 0, 0, 1);
+                    GL11.glTranslated(x + 0.9, y + 0.65, z - 0.01);
+                    break;                    
                 case NORTH:
                     GL11.glTranslated(x + 0.65, y + 0.9, z - 0.01);
                     break;
